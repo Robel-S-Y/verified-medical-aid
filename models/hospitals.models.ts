@@ -30,7 +30,7 @@ export class Hospital extends Model<Hospital> {
     type: DataType.BOOLEAN,
     allowNull: false,
   })
-  role: string;
+  verified: boolean;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.UUID })
