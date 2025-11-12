@@ -3,16 +3,15 @@ import {
   Column,
   Model,
   DataType,
-  //ForeignKey,
-  // BelongsTo,
-  HasOne,
+  ForeignKey,
+  BelongsTo,
   PrimaryKey,
   Default,
 } from 'sequelize-typescript';
-import { Hospital } from './hospitals.models';
+import { User } from './users.models';
 
-@Table({ tableName: 'users', timestamps: true })
-export class User extends Model<User> {
+@Table({ tableName: 'hospitals', timestamps: true })
+export class Hospital extends Model<Hospital> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })
@@ -22,23 +21,21 @@ export class User extends Model<User> {
   name: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
-  email: string;
+  license_number: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  password: string;
-
-  @Column(DataType.STRING)
-  phone: string;
+  adress: string;
 
   @Column({
-    type: DataType.ENUM('admin', 'hospital', 'donor'),
+    type: DataType.BOOLEAN,
     allowNull: false,
   })
   role: string;
 
-  @Column(DataType.STRING)
-  status: string;
+  @ForeignKey(() => User)
+  @Column({ type: DataType.UUID })
+  user_id: string;
 
-  @HasOne(() => Hospital)
-  hospital: Hospital;
+  @BelongsTo(() => User)
+  user: User;
 }
