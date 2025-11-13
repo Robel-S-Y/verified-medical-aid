@@ -7,7 +7,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { Patient } from 'models/patients.models';
 import { Donation } from 'models/donations.models';
-import { Transaction } from 'sequelize';
+import { Transactions } from 'models/transactions.models';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { Transaction } from 'sequelize';
       Hospital,
       Patient,
       Donation,
-      Transaction,
+      Transactions,
     ]),
   ],
   controllers: [UsersController],

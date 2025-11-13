@@ -11,7 +11,7 @@ import {
 import { Donation } from './donations.models';
 
 @Table({ tableName: 'transactions', timestamps: true })
-export class Transaction extends Model<Transaction> {
+export class Transactions extends Model<Transactions> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })

@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import * as argon2 from 'argon2';
 import { User } from 'models/users.models';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -48,5 +50,21 @@ export class UsersService {
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     const { password, ...rest } = user.toJSON();
     return rest as User;
+  }
+  async updateUser(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
+    const user = await this.userModel.findByPk(id);
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    await user.update(dto);
+
+    const { password, ...rest } = user.toJSON();
+    return rest as UserResponseDto;
+  }
+  async deleteUser(id: string) {
+    const user = await this.userModel.findByPk(id);
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    await user.destroy();
+    return { message: 'User deleted successfully' };
   }
 }
