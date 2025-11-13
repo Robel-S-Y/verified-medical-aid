@@ -33,6 +33,7 @@ export class Transaction extends Model<Transaction> {
   @Column({
     type: DataType.ENUM('Pending', 'Completed', 'Failed'),
     allowNull: false,
+    defaultValue: 'Pending',
   })
   status: string;
 

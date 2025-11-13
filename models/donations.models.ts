@@ -52,6 +52,7 @@ export class Donation extends Model<Donation> {
   @Column({
     type: DataType.ENUM('Pending', 'Completed'),
     allowNull: false,
+    defaultValue: 'Pending',
   })
   payment_status: string;
 

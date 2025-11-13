@@ -22,7 +22,7 @@ export class Patient extends Model<Patient> {
   @Column({ type: DataType.STRING, allowNull: false })
   full_name: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: false, unique: true })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   age: number;
 
   @Column({ type: DataType.TEXT, allowNull: false })
@@ -37,6 +37,7 @@ export class Patient extends Model<Patient> {
   @Column({
     type: DataType.ENUM('NEED', 'TREATING', 'DONE'),
     allowNull: false,
+    defaultValue: 'NEED',
   })
   treatment_status: string;
 
@@ -46,11 +47,12 @@ export class Patient extends Model<Patient> {
   @Column({
     type: DataType.ENUM('pending', 'verified', 'rejected'),
     allowNull: false,
+    defaultValue: 'pending',
   })
   verification_status: string;
 
   @ForeignKey(() => Hospital)
-  @Column({ type: DataType.UUID })
+  @Column({ type: DataType.UUID, allowNull: false })
   hospital_id: string;
 
   @BelongsTo(() => Hospital)
