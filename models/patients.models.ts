@@ -5,10 +5,12 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  HasMany,
   PrimaryKey,
   Default,
 } from 'sequelize-typescript';
 import { Hospital } from './hospitals.models';
+import { Donation } from './donations.models';
 
 @Table({ tableName: 'hospitals', timestamps: true })
 export class Patient extends Model<Patient> {
@@ -53,4 +55,7 @@ export class Patient extends Model<Patient> {
 
   @BelongsTo(() => Hospital)
   hospital: Hospital;
+
+  @HasMany(() => Donation)
+  donation: Donation;
 }

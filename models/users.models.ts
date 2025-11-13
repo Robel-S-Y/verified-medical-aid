@@ -3,13 +3,13 @@ import {
   Column,
   Model,
   DataType,
-  //ForeignKey,
-  // BelongsTo,
+  HasMany,
   HasOne,
   PrimaryKey,
   Default,
 } from 'sequelize-typescript';
 import { Hospital } from './hospitals.models';
+import { Donation } from './donations.models';
 
 @Table({ tableName: 'users', timestamps: true })
 export class User extends Model<User> {
@@ -41,4 +41,7 @@ export class User extends Model<User> {
 
   @HasOne(() => Hospital)
   hospital: Hospital;
+
+  @HasMany(() => Donation)
+  donation: Donation;
 }

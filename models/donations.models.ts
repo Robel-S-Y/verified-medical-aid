@@ -5,11 +5,13 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  HasMany,
   PrimaryKey,
   Default,
 } from 'sequelize-typescript';
 import { Patient } from './patients.models';
 import { User } from './users.models';
+import { Transaction } from './transactions.models';
 
 @Table({ tableName: 'donations', timestamps: true })
 export class Donation extends Model<Donation> {
@@ -58,4 +60,7 @@ export class Donation extends Model<Donation> {
 
   @BelongsTo(() => Patient)
   patient: Patient;
+
+  @HasMany(() => Transaction)
+  transaction: Transaction;
 }
