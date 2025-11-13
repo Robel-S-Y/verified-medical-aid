@@ -37,10 +37,6 @@ module.exports = {
         type: Sequelize.ENUM('admin', 'hospital', 'donor'),
         allowNull: false,
       },
-      status: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

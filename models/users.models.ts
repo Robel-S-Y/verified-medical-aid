@@ -11,8 +11,21 @@ import {
 import { Hospital } from './hospitals.models';
 import { Donation } from './donations.models';
 
-@Table({ tableName: 'users', timestamps: true })
-export class User extends Model<User> {
+interface UserCreationAttrs {
+  name: string;
+  email: string;
+  password: string;
+  role: 'admin' | 'hospital' | 'donor';
+  phone?: string;
+}
+
+@Table({
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
+export class User extends Model<User, UserCreationAttrs> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })
@@ -35,9 +48,6 @@ export class User extends Model<User> {
     allowNull: false,
   })
   role: string;
-
-  @Column(DataType.STRING)
-  status: string;
 
   @HasOne(() => Hospital)
   hospital: Hospital;

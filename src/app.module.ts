@@ -4,7 +4,12 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Dialect } from 'sequelize';
-
+import { User } from 'models/users.models';
+import { UsersModule } from './users/users.module';
+import { Hospital } from 'models/hospitals.models';
+import { Patient } from 'models/patients.models';
+import { Donation } from 'models/donations.models';
+import { Transaction } from 'models/transactions.models';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +24,9 @@ import { Dialect } from 'sequelize';
       database: process.env.DB_NAME,
       autoLoadModels: true,
       synchronize: process.env.NODE_ENV === 'dev',
+      models: [User, Hospital, Patient, Donation, Transaction],
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
