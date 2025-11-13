@@ -36,10 +36,16 @@ export class Patient extends Model<Patient> {
     type: DataType.ENUM('NEED', 'TREATING', 'DONE'),
     allowNull: false,
   })
-  status: string;
+  treatment_status: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
   document_url: string;
+
+  @Column({
+    type: DataType.ENUM('pending', 'verified', 'rejected'),
+    allowNull: false,
+  })
+  verification_status: string;
 
   @ForeignKey(() => Hospital)
   @Column({ type: DataType.UUID })
