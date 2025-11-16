@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Dialect } from 'sequelize';
 import { UsersModule } from './users/users.module';
+import { AuthRolesGuard } from './auth/auth-roles.guard';
+import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +22,11 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthRolesGuard,
+    },
+  ],
 })
 export class AppModule {}

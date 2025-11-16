@@ -2,9 +2,25 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Sequelize } from 'sequelize-typescript';
 import 'reflect-metadata';
+import { UuidNotFoundPipe } from './utils/uuid-not-found.pipe';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.setGlobalPrefix('api');
+
+  app.useGlobalPipes(
+    new UuidNotFoundPipe(),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   const sequelize = app.get(Sequelize);
 
@@ -16,8 +32,8 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  await app.listen(process.env.PORT ?? 3000, () => {
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0', () => {
     console.log(`server is running on port ${process.env.PORT ?? 3000}`);
   });
 }
-bootstrap();
+void bootstrap();

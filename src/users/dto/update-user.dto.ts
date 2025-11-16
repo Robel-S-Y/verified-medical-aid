@@ -1,27 +1,36 @@
 import {
   IsEmail,
   IsEnum,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsMobilePhone,
+  Matches,
 } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\+\-=\[\]{};':"\\|,.<>\/?])[^\s]{8,}$/,
+    {
+      message:
+        'Password is too weak. Must contain at least 8 characters, uppercase, lowercase, number, and special character.',
+    },
+  )
   password: string;
 
-  @IsNotEmpty()
-  @IsEnum(['admin', 'hospital', 'donor'])
+  @IsOptional()
+  @IsEnum(['admin', 'hospital', 'donor'], {
+    message: 'Invalid role!',
+  })
   role: 'admin' | 'hospital' | 'donor';
 
   @IsOptional()
