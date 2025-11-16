@@ -10,8 +10,22 @@ import {
 } from 'sequelize-typescript';
 import { Donation } from './donations.models';
 
-@Table({ tableName: 'transactions', timestamps: true })
-export class Transactions extends Model<Transactions> {
+export interface TransactionCreationAttrs {
+  donation_id: string;
+  gateway: string;
+  reference_code: string;
+  status: 'Pending' | 'Completed' | 'Failed';
+}
+@Table({
+  tableName: 'transactions',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
+export class Transactions extends Model<
+  Transactions,
+  TransactionCreationAttrs
+> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })

@@ -28,7 +28,7 @@ export class UsersService {
     private userModel: typeof User,
   ) {}
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: CreateUserDto): Promise<any> {
     try {
       const hashedPassword = await argon2.hash(dto.password);
 
@@ -38,7 +38,10 @@ export class UsersService {
       });
 
       const { password, ...rest } = user.toJSON();
-      return rest as User;
+      return {
+        message: 'successfully created user',
+        user: rest,
+      };
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to create user',
@@ -49,27 +52,50 @@ export class UsersService {
 
   async getUsers() {
     const users = await this.userModel.findAll();
-    return users.map((u) => {
+
+    const Users = users.map((u) => {
       const { password, ...rest } = u.toJSON();
       return rest as User;
     });
+    return {
+      message: 'successfully fetched users',
+      users: Users,
+    };
   }
 
   async getUserById(id: string) {
     const user = await this.userModel.findByPk(id);
     if (!user) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     const { password, ...rest } = user.toJSON();
-    return rest as User;
+    const User = rest as User;
+    return {
+      message: 'successfully fetched user',
+      user: User,
+    };
   }
+
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
     const user = await this.userModel.findByPk(id);
     if (!user) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    const hashedPassword = await argon2.hash(dto.password);
 
-    await user.update(dto);
+    await user.update({ ...dto, password: hashedPassword });
 
     const { password, ...rest } = user.toJSON();
-    return rest as UserResponseDto;
+    return {
+      message: 'successfully updated user',
+      user: {
+        id: rest.id,
+        name: rest.name,
+        email: rest.email,
+        phone: rest.phone,
+        role: rest.role,
+        createdAt: rest.createdAt,
+        updatedAt: rest.updatedAt,
+      },
+    };
   }
+
   async deleteUser(id: string) {
     const user = await this.userModel.findByPk(id);
     if (!user) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -106,6 +132,7 @@ export class UsersService {
     const { password: password, ...rest } = user.toJSON();
 
     return {
+      message: 'Login successfully',
       user: rest,
       access_token,
       refresh_token,
@@ -140,6 +167,7 @@ export class UsersService {
       });
 
       return {
+        message: 'Token refreshed successfully',
         access_token,
         refresh_token: refresh_token_new,
       };

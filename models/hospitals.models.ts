@@ -10,8 +10,21 @@ import {
 } from 'sequelize-typescript';
 import { User } from './users.models';
 
-@Table({ tableName: 'hospitals', timestamps: true })
-export class Hospital extends Model<Hospital> {
+export interface HospitalCreationAttrs {
+  name: string;
+  license_number: string;
+  address: string;
+  verified?: boolean;
+  user_id: string;
+}
+
+@Table({
+  tableName: 'hospitals',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
+export class Hospital extends Model<Hospital, HospitalCreationAttrs> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })
@@ -24,11 +37,12 @@ export class Hospital extends Model<Hospital> {
   license_number: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  adress: string;
+  address: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   })
   verified: boolean;
 

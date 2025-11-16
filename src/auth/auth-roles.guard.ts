@@ -22,7 +22,7 @@ export class AuthRolesGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic) {
-      return true; // Skip authentication
+      return true;
     }
 
     const allowedRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
@@ -41,7 +41,6 @@ export class AuthRolesGuard implements CanActivate {
     }
 
     try {
-      // 3. Verify JWT
       const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
 
       const userRole = decoded.role;

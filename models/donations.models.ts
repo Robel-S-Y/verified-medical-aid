@@ -13,8 +13,22 @@ import { Patient } from './patients.models';
 import { User } from './users.models';
 import { Transactions } from './transactions.models';
 
-@Table({ tableName: 'donations', timestamps: true })
-export class Donation extends Model<Donation> {
+export interface DonationCreationAttrs {
+  donor_id: string;
+  patient_id: string;
+  guest_name: string;
+  guest_email: string;
+  amount: number;
+  transaction_id: string;
+  payment_status: 'Pending' | 'Completed';
+}
+@Table({
+  tableName: 'donations',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
+export class Donation extends Model<Donation, DonationCreationAttrs> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })

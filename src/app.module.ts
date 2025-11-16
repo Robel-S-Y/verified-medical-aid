@@ -5,6 +5,7 @@ import { Dialect } from 'sequelize';
 import { UsersModule } from './users/users.module';
 import { AuthRolesGuard } from './auth/auth-roles.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { HospitalsModule } from './hospitals/hospitals.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
       synchronize: process.env.NODE_ENV === 'dev',
     }),
     UsersModule,
+    HospitalsModule,
   ],
   providers: [
     {

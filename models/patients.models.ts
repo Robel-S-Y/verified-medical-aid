@@ -12,8 +12,23 @@ import {
 import { Hospital } from './hospitals.models';
 import { Donation } from './donations.models';
 
-@Table({ tableName: 'hospitals', timestamps: true })
-export class Patient extends Model<Patient> {
+export interface PatientCreationAttrs {
+  full_name: string;
+  age: number;
+  diagnosis: string;
+  treatment_cost: number;
+  treatment_status: string;
+  document_url: string;
+  verification_status: 'NEED' | 'TREATING' | 'DONE';
+  hospital_id: string;
+}
+@Table({
+  tableName: 'hospitals',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+})
+export class Patient extends Model<Patient, PatientCreationAttrs> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column({ type: DataType.UUID })
