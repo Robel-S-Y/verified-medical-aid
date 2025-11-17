@@ -17,13 +17,11 @@ export interface PatientCreationAttrs {
   age: number;
   diagnosis: string;
   treatment_cost: number;
-  treatment_status: string;
   document_url: string;
-  verification_status: 'NEED' | 'TREATING' | 'DONE';
   hospital_id: string;
 }
 @Table({
-  tableName: 'hospitals',
+  tableName: 'patients',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',

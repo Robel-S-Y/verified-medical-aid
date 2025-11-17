@@ -9,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 import * as jwt from 'jsonwebtoken';
 import { IS_PUBLIC_KEY } from './public.decorator';
+import { Patient } from 'models/patients.models';
 
 @Injectable()
 export class AuthRolesGuard implements CanActivate {
@@ -45,13 +46,23 @@ export class AuthRolesGuard implements CanActivate {
 
       const userRole = decoded.role;
       const userId = decoded.user_id;
+      const hospitalId = decoded.hospital_id;
 
       request.user_id = userId;
       request.role = userRole;
+      request.hospital_id = hospitalId;
 
-      const paramId = request.params.id;
+      const paramUserId = request.params.id;
+      const paramHospitalId = request.params.hospital_id;
+      
 
-      const isOwner = paramId && paramId === userId;
+      const isOwner = paramUserId && paramUserId === userId;
+      const isHospitalOwner = paramHospitalId && paramHospitalId === hospitalId;
+      /*
+      const paramPatientId = request.params.patient_id;
+      const patient_db = Patient.findByPk(paramPatientId);
+
+      const isPatientOwner = patient.hospital.id === hospitalId;*/
 
       if (!allowedRoles) {
         return true;
@@ -59,12 +70,12 @@ export class AuthRolesGuard implements CanActivate {
 
       const hasRole = allowedRoles.includes(userRole);
 
-      if (!hasRole && !isOwner) {
+      if (!hasRole && !isOwner && !isHospitalOwner) {
         throw new ForbiddenException('Forbidden');
       }
 
       return true;
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException('Unauthorized');
     }
   }

@@ -4,7 +4,7 @@ import { Hospital } from 'models/hospitals.models';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
 import { UpdateHospitalDto } from './dto/update-hospital.dto';
 import { HospitalResponseDto } from './dto/hospital-response.dto';
-//import * as jwt from 'jsonwebtoken';
+import { VerifyHospitalDto } from './dto/verify-hospital.dto';
 
 @Injectable()
 export class HospitalsService {
@@ -13,10 +13,18 @@ export class HospitalsService {
     private hospitalModel: typeof Hospital,
   ) {}
 
-  async createHospital(dto: CreateHospitalDto): Promise<Hospital> {
+  async createHospital(dto: CreateHospitalDto, user_id: string): Promise<any> {
     try {
-      const hospital = await this.hospitalModel.create({ ...dto });
-      return hospital;
+      console.log(user_id);
+      const hospital = await this.hospitalModel.create({
+        ...dto,
+        user_id: user_id,
+      });
+
+      return {
+        message: 'successfully fetched Hospital',
+        hospital: hospital,
+      };
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to create hospital',
@@ -27,14 +35,20 @@ export class HospitalsService {
 
   async getHospitals() {
     const hospitals = await this.hospitalModel.findAll();
-    return hospitals;
+    return {
+      message: 'successfully fetched Hospitas',
+      hospitals: hospitals,
+    };
   }
 
   async getHospitalById(id: string) {
     const hospital = await this.hospitalModel.findByPk(id);
     if (!hospital) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    return hospital;
+    return {
+      message: 'successfully fetched Hospital',
+      hospital: hospital,
+    };
   }
 
   async updateHospital(
@@ -46,7 +60,39 @@ export class HospitalsService {
 
     await hospital.update(dto);
 
-    return hospital;
+    return {
+      message: 'successfully updated hospital',
+      hospital: {
+        id: hospital.id,
+        name: hospital.name,
+        license_number: hospital.license_number,
+        address: hospital.address,
+        verified: hospital.verified,
+        user_id: hospital.user_id,
+      },
+    };
+  }
+
+  async verifyHospital(
+    id: string,
+    dto: VerifyHospitalDto,
+  ): Promise<HospitalResponseDto> {
+    const hospital = await this.hospitalModel.findByPk(id);
+    if (!hospital) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    await hospital.update(dto);
+
+    return {
+      message: 'successfully verified hospital',
+      hospital: {
+        id: hospital.id,
+        name: hospital.name,
+        license_number: hospital.license_number,
+        address: hospital.address,
+        verified: hospital.verified,
+        user_id: hospital.user_id,
+      },
+    };
   }
 
   async deleteHospital(id: string) {

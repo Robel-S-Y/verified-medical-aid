@@ -47,7 +47,7 @@ export class Hospital extends Model<Hospital, HospitalCreationAttrs> {
   verified: boolean;
 
   @ForeignKey(() => User)
-  @Column({ type: DataType.UUID })
+  @Column({ type: DataType.UUID, unique: true })
   user_id: string;
 
   @BelongsTo(() => User)

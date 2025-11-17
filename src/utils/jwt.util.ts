@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 interface TokenPayload {
   user_id: string;
   role?: string;
+  hospital_id?: string;
 }
 
 interface GenerateTokenOptions {

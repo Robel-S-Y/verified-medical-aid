@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { HospitalsService } from './hospitals.service';
 import { CreateHospitalDto } from './dto/create-hospital.dto';
@@ -14,16 +15,16 @@ import { UpdateHospitalDto } from './dto/update-hospital.dto';
 import { HospitalResponseDto } from './dto/hospital-response.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Public } from 'src/auth/public.decorator';
-//import { Public } from 'src/auth/public.decorator';
+import { VerifyHospitalDto } from './dto/verify-hospital.dto';
 
 @Controller('hospitals')
 export class HospitalsController {
   constructor(private readonly hospitalsService: HospitalsService) {}
 
   @Post()
-  @Roles('admin', 'hospital')
-  async create(@Body() body: CreateHospitalDto) {
-    return this.hospitalsService.createHospital(body);
+  @Roles('hospital')
+  async create(@Req() req, @Body() body: CreateHospitalDto) {
+    return this.hospitalsService.createHospital(body, req.user_id);
   }
 
   @Get()
@@ -45,6 +46,15 @@ export class HospitalsController {
     @Body() body: UpdateHospitalDto,
   ): Promise<HospitalResponseDto> {
     return this.hospitalsService.updateHospital(id, body);
+  }
+
+  @Patch('verify/:id')
+  @Roles('admin')
+  async verify(
+    @Param('id') id: string,
+    @Body() body: VerifyHospitalDto,
+  ): Promise<HospitalResponseDto> {
+    return this.hospitalsService.verifyHospital(id, body);
   }
 
   @Delete(':id')

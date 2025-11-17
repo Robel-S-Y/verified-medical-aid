@@ -12,8 +12,4 @@ export class CreateHospitalDto {
   @IsNotEmpty()
   @IsString()
   address: string;
-
-  @IsNotEmpty()
-  @IsString()
-  user_id: string;
 }

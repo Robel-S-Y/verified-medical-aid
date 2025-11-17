@@ -20,6 +20,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { generateToken } from 'src/utils/jwt.util';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as jwt from 'jsonwebtoken';
+import { Hospital } from 'models/hospitals.models';
 
 @Injectable()
 export class UsersService {
@@ -106,22 +107,43 @@ export class UsersService {
 
   async login(dto: LoginUserDto): Promise<any> {
     const email = dto.email;
-    const user = await User.findOne({ where: { email } });
-    console.log(user?.dataValues.role);
+    const user_db = await User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Hospital,
+          as: 'hospital',
+          attributes: ['id', 'name', 'verified'],
+        },
+      ],
+    });
+    const user = user_db?.toJSON();
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    const passwordMatches = await argon2.verify(
-      user?.dataValues.password,
-      dto.password,
-    );
+    const passwordMatches = await argon2.verify(user?.password, dto.password);
     if (!passwordMatches)
       throw new UnauthorizedException('Invalid credentials');
 
-    const access_token = generateToken({
-      payload: { user_id: user.id, role: user.dataValues.role },
+    let access_token = generateToken({
+      payload: {
+        user_id: user.id,
+        role: user.role,
+      },
       type: 'access_token',
       expiresIn: '30m',
     });
+
+    if (user.role === 'hospital' && user.hospital) {
+      access_token = generateToken({
+        payload: {
+          user_id: user.id,
+          role: user.role,
+          hospital_id: user.hospital.id,
+        },
+        type: 'access_token',
+        expiresIn: '30m',
+      });
+    }
 
     const refresh_token = generateToken({
       payload: { user_id: user.id },
@@ -129,7 +151,7 @@ export class UsersService {
       expiresIn: '2h',
     });
 
-    const { password: password, ...rest } = user.toJSON();
+    const { password: password, ...rest } = user;
 
     return {
       message: 'Login successfully',
@@ -150,15 +172,43 @@ export class UsersService {
         process.env.JWT_SECRET_REFRESH,
       );
 
-      const user = await User.findByPk(decoded.user_id);
+      const user_id = decoded.user_id;
+
+      const user_db = await User.findOne({
+        where: { id: user_id },
+        include: [
+          {
+            model: Hospital,
+            as: 'hospital',
+            attributes: ['id', 'name', 'verified'],
+          },
+        ],
+      });
+      const user = user_db?.toJSON();
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-      const access_token = generateToken({
-        payload: { user_id: user.id, role: user.dataValues.role },
+
+      let access_token = generateToken({
+        payload: {
+          user_id: user.id,
+          role: user.role,
+        },
         type: 'access_token',
         expiresIn: '30m',
       });
+
+      if (user.role === 'hospital' && user.hospital) {
+        access_token = generateToken({
+          payload: {
+            user_id: user.id,
+            role: user.role,
+            hospital_id: user.hospital.id,
+          },
+          type: 'access_token',
+          expiresIn: '30m',
+        });
+      }
 
       const refresh_token_new = generateToken({
         payload: { user_id: user.id },
