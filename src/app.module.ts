@@ -7,6 +7,7 @@ import { AuthRolesGuard } from './auth/auth-roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { HospitalsModule } from './hospitals/hospitals.module';
 import { PatientsModule } from './patients/patients.module';
+import { DonationsModule } from './donations/donations.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import { PatientsModule } from './patients/patients.module';
     UsersModule,
     HospitalsModule,
     PatientsModule,
+    DonationsModule,
   ],
   providers: [
     {

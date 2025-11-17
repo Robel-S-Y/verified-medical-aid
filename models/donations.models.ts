@@ -15,12 +15,12 @@ import { Transactions } from './transactions.models';
 
 export interface DonationCreationAttrs {
   donor_id: string;
-  patient_id: string;
+  Patient_id: string;
   guest_name: string;
   guest_email: string;
+  isAnonymous: boolean;
   amount: number;
   transaction_id: string;
-  payment_status: 'Pending' | 'Completed';
 }
 @Table({
   tableName: 'donations',
@@ -46,13 +46,20 @@ export class Donation extends Model<Donation, DonationCreationAttrs> {
     type: DataType.UUID,
     allowNull: false,
   })
-  patient_id: string;
+  Patient_id: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   guest_name: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   guest_email: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  isAnonymous: boolean;
 
   @Column({
     type: DataType.DECIMAL,

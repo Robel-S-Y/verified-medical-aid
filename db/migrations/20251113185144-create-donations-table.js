@@ -42,6 +42,10 @@ module.exports = {
       guest_email: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      isAnonymous: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },      
       amount: {
         type: Sequelize.DECIMAL,

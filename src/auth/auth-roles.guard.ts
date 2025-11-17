@@ -15,7 +15,7 @@ import { Patient } from 'models/patients.models';
 export class AuthRolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -41,42 +41,48 @@ export class AuthRolesGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
+    let decoded: any;
+
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
-
-      const userRole = decoded.role;
-      const userId = decoded.user_id;
-      const hospitalId = decoded.hospital_id;
-
-      request.user_id = userId;
-      request.role = userRole;
-      request.hospital_id = hospitalId;
-
-      const paramUserId = request.params.id;
-      const paramHospitalId = request.params.hospital_id;
-      
-
-      const isOwner = paramUserId && paramUserId === userId;
-      const isHospitalOwner = paramHospitalId && paramHospitalId === hospitalId;
-      /*
-      const paramPatientId = request.params.patient_id;
-      const patient_db = Patient.findByPk(paramPatientId);
-
-      const isPatientOwner = patient.hospital.id === hospitalId;*/
-
-      if (!allowedRoles) {
-        return true;
-      }
-
-      const hasRole = allowedRoles.includes(userRole);
-
-      if (!hasRole && !isOwner && !isHospitalOwner) {
-        throw new ForbiddenException('Forbidden');
-      }
-
-      return true;
+      decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
     } catch (error) {
-      throw new UnauthorizedException('Unauthorized');
+      throw new UnauthorizedException(error);
     }
+    const userRole = decoded.role;
+    const userId = decoded.user_id;
+    const hospitalId = decoded.hospital_id;
+
+    request.user_id = userId;
+    request.role = userRole;
+    request.hospital_id = hospitalId;
+
+    const paramUserId = request.params.id;
+    const paramHospitalId = request.params.id;
+    const paramPatientId = request.params.id;
+
+    let patient = await Patient.findByPk(paramPatientId);
+
+    if (patient) patient = patient.toJSON();
+
+    const isOwner = paramUserId && paramUserId === userId;
+    const isHospitalOwner = paramHospitalId && paramHospitalId === hospitalId;
+    const isPatientOwner =
+      patient?.hospital_id && patient?.hospital_id === hospitalId;
+
+    if (!allowedRoles) {
+      return true;
+    }
+
+    const isVerifyRoute = request.route.path.includes('verify');
+
+    const hasRole = allowedRoles.includes(userRole);
+
+    if (isVerifyRoute && !hasRole) throw new ForbiddenException();
+
+    if (!hasRole && !isOwner && !isHospitalOwner && !isPatientOwner) {
+      throw new ForbiddenException();
+    }
+
+    return true;
   }
 }

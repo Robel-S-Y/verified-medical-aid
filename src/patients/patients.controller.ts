@@ -39,8 +39,8 @@ export class PatientsController {
     return this.patientsService.getPatientById(id);
   }
 
-  @Patch(':patient_id')
-  @Roles('admin', 'hospital')
+  @Patch(':id')
+  @Roles('admin')
   async update(
     @Param('id') id: string,
     @Body() body: UpdatePatientDto,
@@ -58,7 +58,7 @@ export class PatientsController {
   }
 
   @Delete(':id')
-  @Roles('admin', 'hospital')
+  @Roles('admin')
   async remove(@Param('id') id: string) {
     return this.patientsService.deletePatient(id);
   }

@@ -36,7 +36,7 @@ export class HospitalsService {
   async getHospitals() {
     const hospitals = await this.hospitalModel.findAll();
     return {
-      message: 'successfully fetched Hospitas',
+      message: 'successfully fetched Hospitals',
       hospitals: hospitals,
     };
   }

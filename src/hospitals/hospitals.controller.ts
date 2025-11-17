@@ -40,7 +40,7 @@ export class HospitalsController {
   }
 
   @Patch(':id')
-  @Roles('admin', 'hospital')
+  @Roles('admin')
   async update(
     @Param('id') id: string,
     @Body() body: UpdateHospitalDto,
