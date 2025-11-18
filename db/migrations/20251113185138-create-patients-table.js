@@ -32,6 +32,11 @@ module.exports = {
         type: Sequelize.DECIMAL,
         allowNull: false,
       },
+      paid_amount: {
+        type: Sequelize.DECIMAL,
+        allowNull: false,
+        defaultValue: 0,
+      },
       treatment_status: {
         type: Sequelize.ENUM('NEED', 'TREATING', 'DONE'),
         allowNull: false,

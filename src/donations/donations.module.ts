@@ -7,6 +7,7 @@ import { DonationsService } from './donations.service';
 import { Patient } from 'models/patients.models';
 import { Donation } from 'models/donations.models';
 import { Transactions } from 'models/transactions.models';
+import { StripeWebhookController } from './webhooks.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Transactions } from 'models/transactions.models';
       Transactions,
     ]),
   ],
-  controllers: [DonationsController],
+  controllers: [DonationsController, StripeWebhookController],
   providers: [DonationsService],
 })
 export class DonationsModule {}

@@ -48,6 +48,21 @@ export class Patient extends Model<Patient, PatientCreationAttrs> {
   treatment_cost: number;
 
   @Column({
+    type: DataType.DECIMAL,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  paid_amount: number;
+
+  @Column({
+    type: DataType.VIRTUAL,
+    get(this: Patient) {
+      return Number(this.treatment_cost) - Number(this.paid_amount);
+    },
+  })
+  remaining_amount: number;
+
+  @Column({
     type: DataType.ENUM('NEED', 'TREATING', 'DONE'),
     allowNull: false,
     defaultValue: 'NEED',

@@ -51,9 +51,9 @@ module.exports = {
         type: Sequelize.DECIMAL,
         allowNull: false,
       },
-      transaction_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      latest_transaction_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
       },      
       payment_status: {
         type: Sequelize.ENUM('Pending', 'Completed'),

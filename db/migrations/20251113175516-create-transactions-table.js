@@ -30,14 +30,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      reference_code: {
+      payment_intent_id: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },      
       status: {
         type: Sequelize.ENUM('Pending', 'Completed', 'Failed'),
         allowNull: false,
         defaultValue: 'Pending',
+      },
+      gateway_response: {
+        type: Sequelize.JSONB,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,

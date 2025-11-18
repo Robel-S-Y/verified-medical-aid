@@ -13,8 +13,6 @@ import { Donation } from './donations.models';
 export interface TransactionCreationAttrs {
   donation_id: string;
   gateway: string;
-  reference_code: string;
-  status: 'Pending' | 'Completed' | 'Failed';
 }
 @Table({
   tableName: 'transactions',
@@ -41,8 +39,8 @@ export class Transactions extends Model<
   @Column({ type: DataType.STRING, allowNull: false })
   gateway: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  reference_code: string;
+  @Column({ type: DataType.STRING, allowNull: true })
+  payment_intent_id: string;
 
   @Column({
     type: DataType.ENUM('Pending', 'Completed', 'Failed'),
@@ -50,6 +48,9 @@ export class Transactions extends Model<
     defaultValue: 'Pending',
   })
   status: string;
+
+  @Column({ type: DataType.JSONB, allowNull: true })
+  gateway_response: any;
 
   @BelongsTo(() => Donation)
   donation: Donation;

@@ -20,7 +20,6 @@ export interface DonationCreationAttrs {
   guest_email: string;
   isAnonymous: boolean;
   amount: number;
-  transaction_id: string;
 }
 @Table({
   tableName: 'donations',
@@ -67,8 +66,8 @@ export class Donation extends Model<Donation, DonationCreationAttrs> {
   })
   amount: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  transaction_id: string;
+  @Column({ type: DataType.UUIDV4, allowNull: true })
+  latest_transaction_id: string;
 
   @Column({
     type: DataType.ENUM('Pending', 'Completed'),

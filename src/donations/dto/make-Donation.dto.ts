@@ -30,8 +30,4 @@ export class MakeDonationtDto {
   @IsNotEmpty()
   @IsNumber()
   amount: number;
-
-  @IsNotEmpty()
-  @IsString()
-  transaction_id: string;
 }
