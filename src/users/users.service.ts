@@ -21,12 +21,15 @@ import { generateToken } from 'src/utils/jwt.util';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as jwt from 'jsonwebtoken';
 import { Hospital } from 'models/hospitals.models';
+import { BlacklistService } from 'src/auth/blacklist/blacklist.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private userModel: typeof User,
+
+    private readonly blacklistService: BlacklistService,
   ) {}
 
   async createUser(dto: CreateUserDto): Promise<any> {
@@ -227,5 +230,17 @@ export class UsersService {
       }
       throw new InternalServerErrorException('Failed to refresh token');
     }
+  }
+
+  async logout(authHeader: string): Promise<any> {
+    if (!authHeader.startsWith('Bearer ')) {
+      throw new HttpException('No Token provided', HttpStatus.NOT_FOUND);
+    }
+
+    const token = authHeader.split(' ')[1];
+
+
+    await this.blacklistService.addToken(token);
+    return { message: 'Logged out successfully' };
   }
 }

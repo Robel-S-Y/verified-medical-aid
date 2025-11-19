@@ -16,8 +16,6 @@ import { Transactions } from './transactions.models';
 export interface DonationCreationAttrs {
   donor_id: string;
   Patient_id: string;
-  guest_name: string;
-  guest_email: string;
   isAnonymous: boolean;
   amount: number;
 }
@@ -36,7 +34,7 @@ export class Donation extends Model<Donation, DonationCreationAttrs> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
-    allowNull: true,
+    allowNull: false,
   })
   donor_id: string;
 
@@ -46,12 +44,6 @@ export class Donation extends Model<Donation, DonationCreationAttrs> {
     allowNull: false,
   })
   Patient_id: string;
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  guest_name: string;
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  guest_email: string;
 
   @Column({
     type: DataType.BOOLEAN,

@@ -9,7 +9,9 @@ import {
   Delete,
   HttpCode,
   Headers,
-  //Req,
+  Req,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +20,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Public } from 'src/auth/public.decorator';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('users')
 export class UsersController {
@@ -25,7 +28,35 @@ export class UsersController {
 
   @Post()
   @Public()
-  async create(@Body() body: CreateUserDto) {
+  async create(@Body() body: CreateUserDto, @Req() req: any) {
+    if (body.role === 'admin') {
+      const authHeader = req.headers['authorization'];
+      if (!authHeader) {
+        throw new HttpException(
+          'Authorization header missing',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        throw new HttpException('Token missing', HttpStatus.FORBIDDEN);
+      }
+
+      let decoded: any;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+      } catch (err) {
+        throw new HttpException('Invalid token', HttpStatus.FORBIDDEN);
+      }
+
+      if (decoded.role !== 'admin') {
+        throw new HttpException(
+          'Only admins can create admin users',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    }
     return this.usersService.createUser(body);
   }
 
@@ -68,5 +99,20 @@ export class UsersController {
   async refresh(@Headers('authorization') authHeader: string) {
     const refreshToken = authHeader?.split(' ')[1];
     return this.usersService.refreshToken(refreshToken);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req: Request) {
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+      throw new HttpException(
+        'Authorization header missing',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.usersService.logout(authHeader);
   }
 }

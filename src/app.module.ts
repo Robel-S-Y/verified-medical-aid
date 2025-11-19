@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Dialect } from 'sequelize';
@@ -8,10 +9,24 @@ import { APP_GUARD } from '@nestjs/core';
 import { HospitalsModule } from './hospitals/hospitals.module';
 import { PatientsModule } from './patients/patients.module';
 import { DonationsModule } from './donations/donations.module';
+import { redisStore } from 'cache-manager-redis-store';
+import { BlacklistModule } from './auth/blacklist/blacklist.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => ({
+        store: await redisStore({
+          socket: {
+            host: 'localhost',
+            port: 6379,
+          },
+        }),
+        ttl: 0, // no default TTL
+      }),
     }),
     SequelizeModule.forRoot({
       dialect: process.env.DB_DIALECT as Dialect,
@@ -27,6 +42,7 @@ import { DonationsModule } from './donations/donations.module';
     HospitalsModule,
     PatientsModule,
     DonationsModule,
+    BlacklistModule,
   ],
   providers: [
     {

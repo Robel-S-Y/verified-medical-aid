@@ -55,9 +55,6 @@ export class StripeWebhookController {
         process.env.STRIPE_WEBHOOK_SECRET!,
       );
     } catch (err: any) {
-      console.error('WEBHOOK ERROR:', err.message);
-      console.error('SIG:', sig);
-      console.error('SECRET:', process.env.STRIPE_WEBHOOK_SECRET);
       return res.status(400).send(`Webhook error: ${err.message}`);
     }
 
@@ -66,31 +63,29 @@ export class StripeWebhookController {
       const donationId = intent.metadata.donation_id;
 
       const tx = await this.transactionModel.findByPk(txId);
-      console.log(tx);
+
       if (tx) {
-        tx.status = 'Completed';
-        tx.gateway_response = intent;
-        await tx.save();
+        await tx.update({ status: 'Completed', gateway_response: intent });
       }
 
       const donation = await this.donationModel.findByPk(donationId);
-      console.log(donation);
-      if (donation) {
-        donation.payment_status = 'Completed';
-        await donation.save();
 
-        const patientId = donation.Patient_id;
+      if (donation) {
+        await donation.update({ payment_status: 'Completed' });
+
+        const patientId = donation.toJSON().Patient_id;
 
         const patient = await Patient.findByPk(patientId);
+
         if (patient) {
           const totalPaid = await this.donationModel.sum('amount', {
             where: {
-              Patient_id: patient.id,
+              Patient_id: patient.toJSON().id,
               payment_status: 'Completed',
             },
           });
-          patient.paid_amount = totalPaid;
-          await patient.save();
+
+          await patient.update({ paid_amount: totalPaid });
         }
       }
     };
@@ -100,16 +95,14 @@ export class StripeWebhookController {
 
       const tx = await this.transactionModel.findByPk(txId);
       if (tx) {
-        tx.status = 'Failed';
-        tx.gateway_response = intent;
-        await tx.save();
+        await tx.update({ status: 'Failed', gateway_response: intent });
       }
     };
 
     if (event.type === 'payment_intent.succeeded') {
       await handlePaymentSucceeded(event.data.object);
     }
-    console.log(event.type === 'payment_intent.succeeded');
+
     if (event.type === 'payment_intent.payment_failed') {
       await handlePaymentFailed(event.data.object);
     }

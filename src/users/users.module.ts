@@ -8,9 +8,11 @@ import { UsersService } from './users.service';
 import { Patient } from 'models/patients.models';
 import { Donation } from 'models/donations.models';
 import { Transactions } from 'models/transactions.models';
+import { BlacklistModule } from 'src/auth/blacklist/blacklist.module';
 
 @Module({
   imports: [
+    BlacklistModule,
     SequelizeModule.forFeature([
       User,
       Hospital,

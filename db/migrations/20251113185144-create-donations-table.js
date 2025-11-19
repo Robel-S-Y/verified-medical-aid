@@ -18,7 +18,7 @@ module.exports = {
       },
       donor_id: {
         type: Sequelize.UUID,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'users',
           key: 'id',
@@ -34,14 +34,6 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
-      },
-      guest_name: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      guest_email: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       isAnonymous: {
         type: Sequelize.BOOLEAN,

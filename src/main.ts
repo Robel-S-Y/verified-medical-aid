@@ -4,18 +4,22 @@ import { Sequelize } from 'sequelize-typescript';
 import 'reflect-metadata';
 import { UuidNotFoundPipe } from './utils/uuid-not-found.pipe';
 import { ValidationPipe } from '@nestjs/common';
-import { json, raw } from 'body-parser';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     rawBody: true,
   });
 
-  app.use('/api/webhooks/stripe', raw({ type: 'application/json' }));
-
-  app.use(json());
+  app.use('api/webhooks/stripe', express.raw({ type: 'application/json' }));
 
   app.setGlobalPrefix('api');
+
+  app.enableCors({
+    origin: ['http://localhost:5500'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new UuidNotFoundPipe(),
