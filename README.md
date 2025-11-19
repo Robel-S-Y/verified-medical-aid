@@ -259,11 +259,18 @@ npx sequelize-cli migration:generate
 ### Environment Configuration
 Required environment variables:
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/medical_aid
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your-jwt-secret-key
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+NODE_ENV=environemt //like development...
+DB_DIALECT=db dialect
+DB_HOST=db hostname
+DB_USER=db username
+DB_PASSWORD='db passowrd'
+DB_NAME=db name
+DB_PORT=db port
+PORT=hosting posrt
+JWT_SECRET=asccess token jwt key
+JWT_SECRET_REFRESH=refresh token jwt key
+STRIPE_SECRET_KEY=stripe secret key
+STRIPE_WEBHOOK_SECRET=stripe webhook secret key
 ```
 
 ## 🧪 API Testing
@@ -305,7 +312,7 @@ Authorization: Bearer {{donor_token}}
 - Hospitals ↔ Patients (One-to-Many)
 - Patients ↔ Donations (One-to-Many)
 - Users ↔ Donations (One-to-Many)
-- Donations ↔ Transactions (One-to-One)
+- Donations ↔ Transactions (One-to-Many)
 
 ## 🎯 Key Technical Achievements
 
