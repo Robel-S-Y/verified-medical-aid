@@ -1,98 +1,346 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏥 Verified Medical Aid - REST API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+*A Final Project Submission - Building a Trustworthy Medical Donation Platform*
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+[![Postman Collection](https://img.shields.io/badge/Postman-Collection-orange?style=for-the-badge&logo=postman)](https://robelyidenekal-8119569.postman.co/workspace/Robel-Yidenekal's-Workspace~2accc88d-5ce9-4399-8f96-d5381e34b89f/collection/47579322-d552ceec-fb59-4c18-a333-13fb1c8f3262?action=share&source=collection_link&creator=47579322)
+![GitHub last commit](https://img.shields.io/github/last-commit/Robel-S-Y/verified-medical-aid)
+![GitHub](https://img.shields.io/github/license/Robel-S-Y/verified-medical-aid)
 
-## Description
+## 📋 Project Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Verified Medical Aid** is a comprehensive backend system developed as a final project submission. This platform implements a robust, secure, and transparent REST API that connects hospitals, patients, and donors through a verified medical donation ecosystem.
 
-## Project setup
+## 🚀 Project Setup & Installation
 
+### Prerequisites
+- Node.js (v16 or higher)
+- PostgreSQL database
+- Redis server (for caching and blacklist)
+- Stripe account for payment processing
+
+### Installation Steps
 ```bash
-$ yarn install
+# Clone the project repository
+git clone https://github.com/Robel-S-Y/verified-medical-aid.git
+
+# Navigate to project directory
+cd verified-medical-aid
+
+# Install project dependencies
+npm install
+
+# Configure environment variables
+cp .env.example .env
+
+# Run database migrations
+npx sequelize-cli db:migrate
+
+# Start the development server
+npm run start:dev
 ```
 
-## Compile and run the project
+## 🏗️ Project Architecture
 
-```bash
-# development
-$ yarn run start
+### Technical Stack
+- **Backend Framework:** Nest.js
+- **Database:** PostgreSQL with Sequelize ORM
+- **Authentication:** JWT with role-based guards
+- **Caching:** Redis for performance optimization
+- **Payment Processing:** Stripe API integration
+- **Migration Tool:** Sequelize CLI
+- **Validation:** DTO-based request validation
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+### Project Structure
+```
+verified-medical-aid/
+├── config/
+│   └── database.cjs                 # Sequelize configuration
+├── db/
+│   └── migrations/                  # Database migration files
+├── models/                          # Sequelize model definitions
+├── src/
+│   ├── auth/                        # Authentication system
+│   │   ├── auth-roles.guard.ts     # Role-based access control
+│   │   ├── public.decorator.ts     # Public route decorator
+│   │   ├── roles.decorator.ts      # Role requirement decorator
+│   │   └── blacklist/              # JWT blacklist management
+│   ├── donations/                   # Donation processing
+│   │   ├── dto/                    # Donation data transfer objects
+│   │   ├── donations.controller.ts
+│   │   ├── donations.service.ts
+│   │   └── webhooks.controller.ts  # Stripe webhook handling
+│   ├── hospitals/                   # Hospital management
+│   │   ├── dto/                    # Hospital DTOs
+│   │   ├── hospitals.controller.ts
+│   │   └── hospitals.service.ts
+│   ├── patients/                    # Patient management
+│   │   ├── dto/                    # Patient DTOs
+│   │   ├── patients.controller.ts
+│   │   └── patients.service.ts
+│   ├── redis/                       # Redis caching system
+│   │   ├── interceptor/            # Cache interceptors
+│   │   ├── cache.decorator.ts      # Cache decorator
+│   │   └── redis-clear.service.ts  # Cache management
+│   ├── users/                       # User management
+│   │   ├── dto/                    # User DTOs
+│   │   ├── users.controller.ts
+│   │   └── users.service.ts
+│   └── utils/                       # Utility functions
+│       ├── jwt.util.ts             # JWT utilities
+│       └── uuid-not-found.pipe.ts  # UUID validation pipe
 ```
 
-## Run tests
+## 🔐 Implemented Security Features
 
-```bash
-# unit tests
-$ yarn run test
+### Authentication & Authorization
+- **JWT-based authentication** with token blacklisting
+- **Role-based access control** using custom guards and decorators
+- **Public route decorator** for unprotected endpoints
+- **Token refresh and logout** mechanisms
 
-# e2e tests
-$ yarn run test:e2e
+### Redis Integration
+- **JWT blacklist management** for secure logout
+- **API response caching** for improved performance
+- **Cache invalidation** on data updates
+- **Redis interceptors** for automatic caching
 
-# test coverage
-$ yarn run test:cov
+## 📊 Database Schema
+
+### Implemented Models
+- **Users** - User accounts with role-based access
+- **Hospitals** - Medical institution profiles
+- **Patients** - Patient cases with treatment details
+- **Donations** - Donation records and payment status
+- **Transactions** - Payment transaction history
+
+### Migration Files
+```
+20251101213259-create-users-table.js
+20251112194006-create-hospitals-table.js
+20251113175516-create-transactions-table.js
+20251113185138-create-patients-table.js
+20251113185144-create-donations-table.js
 ```
 
-## Deployment
+## 🛡️ Role-Based Access Control
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 👑 Admin Role
+**Permissions:**
+- ✅ Verify hospitals and patients (`PATCH /hospitals/verify/:id`, `PATCH /patients/verify/:id`)
+- ✅ Access all users (`GET /users`)
+- ✅ Monitor all platform activities
+- ✅ System-wide oversight
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 🏥 Hospital Role
+**Permissions:**
+- ✅ Create and manage hospital profile (`POST /hospitals`, `PATCH /hospitals/:id`)
+- ✅ Create and update patient cases (`POST /patients`, `PATCH /patients/:id`)
+- ✅ View donations for their patients (`GET /donations`)
+- ✅ Manage treatment status updates
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+### ❤️ Donor Role
+**Permissions:**
+- ✅ Make donations (`POST /donations`)
+- ✅ Retry failed payments (`POST /donations/retry`)
+- ✅ Browse patient profiles (`GET /patients/:id`)
+- ✅ Personal donation history
+
+## 📋 API Endpoints Implementation
+
+### 🔐 Authentication Endpoints
+```typescript
+// Public routes
+POST /users/login          # User authentication
+POST /users                # User registration
+
+// Protected routes
+POST /users/refresh        # Token refresh
+POST /users/logout         # User logout
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 🏥 Hospital Management
+```typescript
+// Hospital role required
+POST /hospitals            # Create hospital profile
+PATCH /hospitals/:id       # Update hospital (owner only)
 
-## Resources
+// Admin role required
+GET /hospitals             # List all hospitals
+PATCH /hospitals/verify/:id # Verify hospital status
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 🏥 Patient Management
+```typescript
+// Hospital role required
+POST /patients             # Create patient case
+GET /patients              # List hospital's patients
+PATCH /patients/:id        # Update patient (owner hospital)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+// Public access
+GET /patients/:id          # Get patient details
 
-## Support
+// Admin role required
+PATCH /patients/verify/:id # Verify patient case
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 💝 Donation Processing
+```typescript
+// Donor/Public access
+POST /donations            # Process donation
+POST /donations/retry      # Retry failed payment
 
-## Stay in touch
+// Hospital role required
+GET /donations             # View donations for patients
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+// Public access
+GET /donations/:id         # Get donation details
+```
 
-## License
+## 💳 Stripe Integration Features
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Webhook Handling
+- **Stripe webhook controller** for payment event processing
+- **Secure webhook verification** with Stripe signatures
+- **Real-time payment status updates**
+- **Failed payment handling and retry logic**
+
+### Payment Flow
+```typescript
+// Donation DTO structure
+{
+  donor_id?: string;       // Optional for authenticated donors
+  patient_id: string;      // Required - target patient
+  guest_name?: string;     // Optional for guest donations
+  guest_email?: string;    // Optional for guest notifications
+  amount: number;          // Amount in cents
+}
+```
+
+## 🔧 Development Features
+
+### Data Validation
+- **DTO-based validation** for all incoming requests
+- **UUID validation pipe** for route parameters
+- **Input sanitization** and type checking
+- **Custom validation decorators**
+
+### Error Handling
+- **Global exception filters**
+- **Proper HTTP status codes**
+- **Structured error responses**
+- **Database constraint handling**
+
+### Performance Optimization
+- **Redis caching** for frequently accessed data
+- **Cache invalidation** on data modifications
+- **Database query optimization**
+- **Eager loading** for related data
+
+## 🚀 Running the Project
+
+### Development Commands
+```bash
+# Start development server
+npm run start:dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start:prod
+
+# Run database migrations
+npx sequelize-cli db:migrate
+
+# Generate new migration
+npx sequelize-cli migration:generate
+```
+
+### Environment Configuration
+Required environment variables:
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/medical_aid
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-jwt-secret-key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+```
+
+## 🧪 API Testing
+
+### Postman Collection
+- Complete API testing suite
+- Environment setup guidance
+- Authentication flow examples
+- All CRUD operation tests
+
+### Testing Endpoints
+```bash
+# Test authentication
+POST {{Base_url}}/users/login
+
+# Test hospital creation
+POST {{Base_url}}/hospitals
+Authorization: Bearer {{hospital_token}}
+
+# Test donation processing
+POST {{Base_url}}/donations
+Authorization: Bearer {{donor_token}}
+```
+
+## 📈 Project Implementation Status
+
+### ✅ Completed Modules
+- [x] User authentication and authorization
+- [x] Hospital management with verification
+- [x] Patient case management
+- [x] Donation processing with Stripe
+- [x] Redis caching and blacklist
+- [x] Database migrations and models
+- [x] Role-based access control
+- [x] Input validation and error handling
+
+### 🔄 Database Relations
+- Users ↔ Hospitals (One-to-Many)
+- Hospitals ↔ Patients (One-to-Many)
+- Patients ↔ Donations (One-to-Many)
+- Users ↔ Donations (One-to-Many)
+- Donations ↔ Transactions (One-to-One)
+
+## 🎯 Key Technical Achievements
+
+### Architecture Patterns
+- **Modular design** with feature-based organization
+- **Repository pattern** with Sequelize ORM
+- **DTO pattern** for request/response validation
+- **Interceptor pattern** for cross-cutting concerns
+- **Guard pattern** for route protection
+
+### Security Implementation
+- **JWT with blacklist** for secure authentication
+- **Role-based guards** for endpoint protection
+- **Input validation** with class-validator
+- **SQL injection prevention** through ORM
+- **Secure payment processing** with Stripe
+
+## 📚 Learning Outcomes Demonstrated
+
+This project showcases proficiency in:
+- **Nest.js framework** and modular architecture
+- **PostgreSQL with Sequelize ORM**
+- **Redis integration** for caching and security
+- **RESTful API design** principles
+- **JWT authentication** and authorization
+- **Stripe payment integration**
+- **Database migrations** and schema design
+- **Error handling** and validation techniques
+
+---
+
+**Project Submitted By:** Robel Yidenekal  
+**Repository:** [github.com/Robel-S-Y/verified-medical-aid](https://github.com/Robel-S-Y/verified-medical-aid)  
+**Database:** PostgreSQL with Sequelize ORM  
+**Cache:** Redis for performance and security
+
+---
+*This project represents comprehensive backend development skills with focus on security, scalability, and real-world payment integration.*
