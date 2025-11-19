@@ -46,7 +46,7 @@ export class AuthRolesGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
     const isBlacklisted = await this.blacklistService.isBlacklisted(token);
-    console.log(isBlacklisted);
+
     if (isBlacklisted) {
       throw new UnauthorizedException('Token has been logged out');
     }

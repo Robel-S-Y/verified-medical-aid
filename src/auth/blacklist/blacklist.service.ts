@@ -1,18 +1,16 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
-import type { Cache } from 'cache-manager';
+import Redis from 'ioredis';
 
 @Injectable()
 export class BlacklistService {
-  constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
+  constructor(@Inject('REDIS_CLIENT') private redis: Redis) {}
 
-  async addToken(token: string) {
-    await this.cache.set(token, true, 1800);
+  async addToken(token: string, ttlSeconds = 1800) {
+    await this.redis.setex(token, ttlSeconds, '1');
   }
 
-  async isBlacklisted(token: string) {
-    const v = await this.cache.get(token);
-    console.log('isBlacklisted check:', token, v);
-    return !!v;
+  async isBlacklisted(token: string): Promise<boolean> {
+    const value = await this.redis.get(token);
+    return value === '1';
   }
 }

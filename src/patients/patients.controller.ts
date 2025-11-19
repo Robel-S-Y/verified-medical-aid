@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Controller,
+  UseInterceptors,
+  UploadedFile,
   Get,
   Post,
   Body,
@@ -16,25 +17,71 @@ import { PatientResponseDto } from './dto/patient-response.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Public } from 'src/auth/public.decorator';
 import { VerifyPatientDto } from './dto/verify-patient.dto';
-
+import { Cache } from 'src/redis/cache.decorator';
+import { CacheInvalidationService } from 'src/redis/cache-invalidation.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import type { Express } from 'express';
 @Controller('patients')
 export class PatientsController {
-  constructor(private readonly patientsService: PatientsService) {}
+  constructor(
+    private readonly patientsService: PatientsService,
+    private readonly cacheInvalidation: CacheInvalidationService,
+  ) {}
 
   @Post()
   @Roles('hospital')
   async create(@Req() req, @Body() body: CreatePatientDto) {
-    return this.patientsService.createPatient(body, req.hospital_id);
+    const result = this.patientsService.createPatient(body, req.hospital_id);
+
+    await this.cacheInvalidation.clearPrefix('/patients');
+
+    return result;
   }
+
+  @Post('upload-document')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/documents',
+        filename: (req, file, callback) => {
+          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `doc-${unique}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        const isPdf =
+          file.mimetype === 'application/pdf' ||
+          file.originalname.toLowerCase().endsWith('.pdf');
+
+        if (!isPdf) {
+          return cb(new Error('Only PDF files are allowed'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadDoc(@UploadedFile() file: Express.Multer.File) {
+    const document_url = `/uploads/documents/${file.filename}`;
+    return {
+      message: 'Document uploaded successfully',
+      document_url,
+    };
+  }
+
 
   @Get()
   @Public()
+  @Cache(600)
   async findAll() {
     return this.patientsService.getPatients();
   }
 
   @Get(':id')
   @Public()
+  @Cache(600)
   async findOne(@Param('id') id: string) {
     return this.patientsService.getPatientById(id);
   }
@@ -45,7 +92,11 @@ export class PatientsController {
     @Param('id') id: string,
     @Body() body: UpdatePatientDto,
   ): Promise<PatientResponseDto> {
-    return this.patientsService.updatePatient(id, body);
+    const result = this.patientsService.updatePatient(id, body);
+
+    await this.cacheInvalidation.clearPrefix('/patients');
+
+    return result;
   }
 
   @Patch('verify/:id')
@@ -54,12 +105,20 @@ export class PatientsController {
     @Param('id') id: string,
     @Body() body: VerifyPatientDto,
   ): Promise<PatientResponseDto> {
-    return this.patientsService.verifyPatient(id, body);
+    const result = this.patientsService.verifyPatient(id, body);
+
+    await this.cacheInvalidation.clearPrefix('/patients');
+
+    return result;
   }
 
   @Delete(':id')
   @Roles('admin')
   async remove(@Param('id') id: string) {
-    return this.patientsService.deletePatient(id);
+    const result = this.patientsService.deletePatient(id);
+
+    await this.cacheInvalidation.clearPrefix('/patients');
+
+    return result;
   }
 }

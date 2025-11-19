@@ -5,6 +5,7 @@ import { CreateHospitalDto } from './dto/create-hospital.dto';
 import { UpdateHospitalDto } from './dto/update-hospital.dto';
 import { HospitalResponseDto } from './dto/hospital-response.dto';
 import { VerifyHospitalDto } from './dto/verify-hospital.dto';
+import { Patient } from 'models/patients.models';
 
 @Injectable()
 export class HospitalsService {
@@ -15,7 +16,6 @@ export class HospitalsService {
 
   async createHospital(dto: CreateHospitalDto, user_id: string): Promise<any> {
     try {
-      console.log(user_id);
       const hospital = await this.hospitalModel.create({
         ...dto,
         user_id: user_id,
@@ -34,7 +34,14 @@ export class HospitalsService {
   }
 
   async getHospitals() {
-    const hospitals = await this.hospitalModel.findAll();
+    const hospitals = await this.hospitalModel.findAll({
+      include: [
+        {
+          model: Patient,
+          as: 'patient',
+        },
+      ],
+    });
     return {
       message: 'successfully fetched Hospitals',
       hospitals: hospitals,
@@ -42,7 +49,14 @@ export class HospitalsService {
   }
 
   async getHospitalById(id: string) {
-    const hospital = await this.hospitalModel.findByPk(id);
+    const hospital = await this.hospitalModel.findByPk(id, {
+      include: [
+        {
+          model: Patient,
+          as: 'patient',
+        },
+      ],
+    });
     if (!hospital) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
     return {

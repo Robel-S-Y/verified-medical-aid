@@ -7,8 +7,10 @@ import {
   BelongsTo,
   PrimaryKey,
   Default,
+  HasMany,
 } from 'sequelize-typescript';
 import { User } from './users.models';
+import { Patient } from './patients.models';
 
 export interface HospitalCreationAttrs {
   name: string;
@@ -52,4 +54,7 @@ export class Hospital extends Model<Hospital, HospitalCreationAttrs> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasMany(() => Patient)
+  patient: Patient;
 }

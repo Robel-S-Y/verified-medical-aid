@@ -9,9 +9,11 @@ import { Patient } from 'models/patients.models';
 import { Donation } from 'models/donations.models';
 import { Transactions } from 'models/transactions.models';
 import { BlacklistModule } from 'src/auth/blacklist/blacklist.module';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
   imports: [
+    RedisModule,
     BlacklistModule,
     SequelizeModule.forFeature([
       User,

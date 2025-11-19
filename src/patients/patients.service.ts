@@ -5,6 +5,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
 import { VerifyPatientDto } from './dto/verify-patient.dto';
+import { Donation } from 'models/donations.models';
 
 @Injectable()
 export class PatientsService {
@@ -36,7 +37,14 @@ export class PatientsService {
   }
 
   async getPatients() {
-    const patients = await this.patientModel.findAll();
+    const patients = await this.patientModel.findAll({
+      include: [
+        {
+          model: Donation,
+          as: 'donation',
+        },
+      ],
+    });
     return {
       message: 'successfully fetched patients',
       patients: patients,
@@ -44,7 +52,14 @@ export class PatientsService {
   }
 
   async getPatientById(id: string) {
-    const patient = await this.patientModel.findByPk(id);
+    const patient = await this.patientModel.findByPk(id, {
+      include: [
+        {
+          model: Donation,
+          as: 'donation',
+        },
+      ],
+    });
     if (!patient) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
     return {

@@ -21,10 +21,14 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Public } from 'src/auth/public.decorator';
 import * as jwt from 'jsonwebtoken';
-
+import { Cache } from 'src/redis/cache.decorator';
+import { CacheInvalidationService } from 'src/redis/cache-invalidation.service';
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly cacheInvalidation: CacheInvalidationService,
+  ) {}
 
   @Post()
   @Public()
@@ -57,17 +61,23 @@ export class UsersController {
         );
       }
     }
-    return this.usersService.createUser(body);
+    const result = this.usersService.createUser(body);
+
+    await this.cacheInvalidation.clearPrefix('/users');
+
+    return result;
   }
 
   @Get()
   @Roles('admin')
+  @Cache(600)
   async findAll() {
     return this.usersService.getUsers();
   }
 
   @Get(':id')
   @Roles('admin')
+  @Cache(600)
   async findOne(@Param('id') id: string) {
     return this.usersService.getUserById(id);
   }
@@ -77,13 +87,23 @@ export class UsersController {
     @Param('id') id: string,
     @Body() body: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    return this.usersService.updateUser(id, body);
+    const result = this.usersService.updateUser(id, body);
+
+    await this.cacheInvalidation.clearPrefix('/users');
+
+    return result;
   }
+
   @Delete(':id')
   @Roles('admin')
   async remove(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+    const result = this.usersService.deleteUser(id);
+
+    await this.cacheInvalidation.clearPrefix('/users');
+
+    return result;
   }
+
   @Post('login')
   @Public()
   @HttpCode(200)

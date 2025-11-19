@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
 import { BlacklistService } from './blacklist.service';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [CacheModule.register()],
+  imports: [RedisModule],
   providers: [BlacklistService],
-  exports: [BlacklistService], // export so AuthModule can use it
+  exports: [BlacklistService],
 })
 export class BlacklistModule {}

@@ -7,9 +7,11 @@ import { HospitalsService } from './hospitals.service';
 import { Patient } from 'models/patients.models';
 import { Donation } from 'models/donations.models';
 import { Transactions } from 'models/transactions.models';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
   imports: [
+    RedisModule,
     SequelizeModule.forFeature([
       User,
       Hospital,

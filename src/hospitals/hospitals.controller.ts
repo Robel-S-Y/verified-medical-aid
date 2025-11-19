@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Controller,
   Get,
@@ -16,25 +15,36 @@ import { HospitalResponseDto } from './dto/hospital-response.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Public } from 'src/auth/public.decorator';
 import { VerifyHospitalDto } from './dto/verify-hospital.dto';
+import { Cache } from 'src/redis/cache.decorator';
+import { CacheInvalidationService } from 'src/redis/cache-invalidation.service';
 
 @Controller('hospitals')
 export class HospitalsController {
-  constructor(private readonly hospitalsService: HospitalsService) {}
+  constructor(
+    private readonly hospitalsService: HospitalsService,
+    private readonly cacheInvalidation: CacheInvalidationService,
+  ) {}
 
   @Post()
   @Roles('hospital')
   async create(@Req() req, @Body() body: CreateHospitalDto) {
-    return this.hospitalsService.createHospital(body, req.user_id);
+    const result = this.hospitalsService.createHospital(body, req.user_id);
+
+    await this.cacheInvalidation.clearPrefix('/hospitals');
+
+    return result;
   }
 
   @Get()
   @Public()
+  @Cache(600)
   async findAll() {
     return this.hospitalsService.getHospitals();
   }
 
   @Get(':id')
   @Public()
+  @Cache(600)
   async findOne(@Param('id') id: string) {
     return this.hospitalsService.getHospitalById(id);
   }
@@ -45,7 +55,11 @@ export class HospitalsController {
     @Param('id') id: string,
     @Body() body: UpdateHospitalDto,
   ): Promise<HospitalResponseDto> {
-    return this.hospitalsService.updateHospital(id, body);
+    const result = this.hospitalsService.updateHospital(id, body);
+
+    await this.cacheInvalidation.clearPrefix('/hospitals');
+
+    return result;
   }
 
   @Patch('verify/:id')
@@ -54,12 +68,20 @@ export class HospitalsController {
     @Param('id') id: string,
     @Body() body: VerifyHospitalDto,
   ): Promise<HospitalResponseDto> {
-    return this.hospitalsService.verifyHospital(id, body);
+    const result = this.hospitalsService.verifyHospital(id, body);
+
+    await this.cacheInvalidation.clearPrefix('/hospitals');
+
+    return result;
   }
 
   @Delete(':id')
   @Roles('admin', 'hospital')
   async remove(@Param('id') id: string) {
-    return this.hospitalsService.deleteHospital(id);
+    const result = this.hospitalsService.deleteHospital(id);
+
+    await this.cacheInvalidation.clearPrefix('/hospitals');
+
+    return result;
   }
 }

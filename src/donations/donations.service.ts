@@ -148,7 +148,14 @@ export class DonationsService {
   }
 
   async getDonations() {
-    const donations = await this.donationModel.findAll();
+    const donations = await this.donationModel.findAll({
+      include: [
+        {
+          model: Transactions,
+          as: 'transaction',
+        },
+      ],
+    });
     return {
       message: 'successfully fetched donations',
       donations: donations,
@@ -156,7 +163,14 @@ export class DonationsService {
   }
 
   async getDonationById(id: string) {
-    const donation = await this.donationModel.findByPk(id);
+    const donation = await this.donationModel.findByPk(id, {
+      include: [
+        {
+          model: Transactions,
+          as: 'transaction',
+        },
+      ],
+    });
     if (!donation) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
     return {

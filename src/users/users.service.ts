@@ -22,6 +22,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import * as jwt from 'jsonwebtoken';
 import { Hospital } from 'models/hospitals.models';
 import { BlacklistService } from 'src/auth/blacklist/blacklist.service';
+import { Donation } from 'models/donations.models';
 
 @Injectable()
 export class UsersService {
@@ -55,7 +56,20 @@ export class UsersService {
   }
 
   async getUsers() {
-    const users = await this.userModel.findAll();
+    const users = await this.userModel.findAll({
+      include: [
+        {
+          model: Hospital,
+          as: 'hospital',
+          attributes: ['id', 'name', 'verified'],
+        },
+        {
+          model: Donation,
+          as: 'donation',
+          attributes: ['id', 'patient_id', 'amount', 'payment_status'],
+        },
+      ],
+    });
 
     const Users = users.map((u) => {
       const { password, ...rest } = u.toJSON();
@@ -68,7 +82,20 @@ export class UsersService {
   }
 
   async getUserById(id: string) {
-    const user = await this.userModel.findByPk(id);
+    const user = await this.userModel.findByPk(id, {
+      include: [
+        {
+          model: Hospital,
+          as: 'hospital',
+          attributes: ['id', 'name', 'verified'],
+        },
+        {
+          model: Donation,
+          as: 'donation',
+          attributes: ['id', 'patient_id', 'amount', 'payment_status'],
+        },
+      ],
+    });
     if (!user) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     const { password, ...rest } = user.toJSON();
     const User = rest as User;
@@ -238,7 +265,6 @@ export class UsersService {
     }
 
     const token = authHeader.split(' ')[1];
-
 
     await this.blacklistService.addToken(token);
     return { message: 'Logged out successfully' };
