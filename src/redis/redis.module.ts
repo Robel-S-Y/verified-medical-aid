@@ -6,7 +6,7 @@ const redisProvider = {
   provide: 'REDIS_CLIENT',
   useFactory: () => {
     const client = new Redis({
-      host: REDIS_URL,
+      host: process.env.REDIS_URL,
       port: 6379,
       // password: '', // add if needed
     });
