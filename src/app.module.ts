@@ -30,15 +30,12 @@ import { join } from 'path';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadModels: true,
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-       },
-     dialectOptions: {
-       ssl: {
+      ssl: true,
+      dialectOptions: {
+        ssl: {
           require: true,
-         rejectUnauthorized: false,
-       }
+          rejectUnauthorized: false,
+        },
       },
       synchronize: process.env.NODE_ENV === 'dev',
     }),
