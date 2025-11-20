@@ -65,7 +65,7 @@ export class UsersService {
         },
         {
           model: Donation,
-          as: 'donation',
+          as: 'donations',
         },
       ],
     });
