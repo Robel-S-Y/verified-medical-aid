@@ -53,5 +53,5 @@ export class User extends Model<User, UserCreationAttrs> {
   hospital: Hospital;
 
   @HasMany(() => Donation)
-  donation: Donation;
+  donations: Donation;
 }
