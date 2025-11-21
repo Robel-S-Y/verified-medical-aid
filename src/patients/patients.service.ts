@@ -41,7 +41,7 @@ export class PatientsService {
       include: [
         {
           model: Donation,
-          as: 'donation',
+          as: 'donations',
         },
       ],
     });
@@ -56,7 +56,7 @@ export class PatientsService {
       include: [
         {
           model: Donation,
-          as: 'donation',
+          as: 'donations',
         },
       ],
     });
