@@ -90,8 +90,7 @@ export class UsersService {
         },
         {
           model: Donation,
-          as: 'donation',
-          attributes: ['id', 'patient_id', 'amount', 'payment_status'],
+          as: 'donations'
         },
       ],
     });
