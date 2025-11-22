@@ -160,6 +160,11 @@ export class DonationsService {
           as: 'user',
           attributes: ['id', 'name'],
         },
+        {
+          model: Patient,
+          as: 'patient',
+          attributes: ['id', 'full_name'],
+        },
       ],
     });
     return {
