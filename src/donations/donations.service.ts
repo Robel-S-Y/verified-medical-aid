@@ -158,6 +158,7 @@ export class DonationsService {
         {
           model: User,
           as: 'user',
+          attributes: ['id', 'name'],
         },
       ],
     });
