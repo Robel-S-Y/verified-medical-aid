@@ -163,7 +163,7 @@ export class DonationsService {
         {
           model: Patient,
           as: 'patient',
-          attributes: ['id', 'full_name'],
+          attributes: ['id', 'full_name', 'diagnosis'],
         },
       ],
     });
