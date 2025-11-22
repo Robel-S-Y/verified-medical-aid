@@ -53,5 +53,5 @@ export class Transactions extends Model<
   gateway_response: any;
 
   @BelongsTo(() => Donation)
-  donation: Donation;
+  donations: Donation;
 }
