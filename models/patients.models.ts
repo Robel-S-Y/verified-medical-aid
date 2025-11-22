@@ -87,5 +87,5 @@ export class Patient extends Model<Patient, PatientCreationAttrs> {
   hospital: Hospital;
 
   @HasMany(() => Donation)
-  donation: Donation;
+  donations: Donation;
 }
