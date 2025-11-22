@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Donation } from 'models/donations.models';
 import { Transactions } from 'models/transactions.models';
 import { Patient } from 'models/patients.models';
+import { User } from 'models/users.models';
 import { Sequelize } from 'sequelize-typescript';
 import { MakeDonationtDto } from './dto/make-Donation.dto';
 import Stripe from 'stripe';
@@ -153,6 +154,10 @@ export class DonationsService {
         {
           model: Transactions,
           as: 'transaction',
+        },
+        {
+          model: User,
+          as: 'user',
         },
       ],
     });
