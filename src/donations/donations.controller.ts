@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Param,
+  Req,
+} from '@nestjs/common';
 import { DonationsService } from './donations.service';
 import { MakeDonationtDto } from './dto/make-Donation.dto';
 import { Public } from 'src/auth/public.decorator';
@@ -45,5 +53,14 @@ export class DonationsController {
   @Cache(600)
   async findOne(@Param('id') id: string) {
     return this.donationsService.getDonationById(id);
+  }
+  @Delete(':id')
+  @Roles('admin')
+  async remove(@Param('id') id: string) {
+    const result = this.donationsService.deleteDonation(id);
+
+    await this.cacheInvalidation.clearPrefix('/donations');
+
+    return result;
   }
 }

@@ -189,4 +189,12 @@ export class DonationsService {
       donation: donation,
     };
   }
+
+  async deleteDonation(id: string) {
+    const donation = await this.donationModel.findByPk(id);
+    if (!donation) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+
+    await donation.destroy();
+    return { message: 'Donation Canceled/Deleted successfully' };
+  }
 }
