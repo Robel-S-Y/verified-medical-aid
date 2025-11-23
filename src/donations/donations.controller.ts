@@ -55,7 +55,7 @@ export class DonationsController {
     return this.donationsService.getDonationById(id);
   }
   @Delete(':id')
-  @Roles('admin')
+  @Roles('t')
   async remove(@Param('id') id: string) {
     const result = this.donationsService.deleteDonation(id);
 
